@@ -1,5 +1,6 @@
 package com.frock.chapaturuta.features.auth.presentation.register
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
@@ -13,6 +14,7 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.frock.chapaturuta.R
 import com.frock.chapaturuta.features.auth.presentation.login.PrimaryColor
 import com.frock.chapaturuta.features.auth.presentation.login.BackgroundColor
 
@@ -36,12 +38,10 @@ fun RegisterUserView(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            // Logo
-            Icon(
-                painter = painterResource(id = android.R.drawable.ic_menu_compass),
-                contentDescription = "Logo",
-                modifier = Modifier.size(80.dp),
-                tint = PrimaryColor
+            Image(
+                painter = painterResource(id = R.drawable.chapaturuta_logo),
+                contentDescription = "Logo de Chapa Tu Ruta",
+                modifier = Modifier.size(120.dp)
             )
 
             Spacer(modifier = Modifier.height(24.dp))
