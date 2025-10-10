@@ -31,6 +31,9 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import com.frock.chapaturuta.core.ui.components.RouteCard
+import com.frock.chapaturuta.core.ui.components.StopCard
+import com.frock.chapaturuta.core.ui.components.VehicleCard
 import com.frock.chapaturuta.core.ui.theme.AppTheme
 
 @Composable
@@ -80,6 +83,40 @@ fun Home(){
                 Text(text = "See Details")
             }
         }
+
+        VehicleCard()
+
+        Row(modifier = Modifier.height(48.dp).fillMaxWidth().padding(8.dp,4.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = "Let's Drive",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            TextButton(onClick = {}, contentPadding = PaddingValues(0.dp,0.dp)) {
+                Text(text = "See All")
+            }
+        }
+
+        RouteCard(true)
+        RouteCard(false)
+
+        Row(modifier = Modifier.height(48.dp).fillMaxWidth().padding(8.dp,4.dp), verticalAlignment = Alignment.CenterVertically) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = "Your Stops",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            TextButton(onClick = {}, contentPadding = PaddingValues(0.dp,0.dp)) {
+                Text(text = "See All")
+            }
+        }
+
+        StopCard()
+        StopCard()
     }
 }
 
