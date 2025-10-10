@@ -13,10 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Delete
-import androidx.compose.material.icons.filled.DirectionsCar
 import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -34,37 +31,70 @@ import androidx.compose.ui.unit.dp
 import com.frock.chapaturuta.R
 
 @Composable
-fun StopCard(){
-    Card(modifier = Modifier.padding(8.dp)
-        .height(80.dp)
-        .border(width = 2.dp, color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(8.dp))) {
+fun StopCard(
+    stopName: String = "Metro Javier Prado",
+    address: String = "Av Javier Prado 123",
+    onDelete: () -> Unit = {},
+    onEdit: () -> Unit = {}
+) {
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .height(80.dp)
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(8.dp)
+            )
+    ) {
         Row(modifier = Modifier.fillMaxHeight()) {
-            Image(painterResource(R.drawable.imagetemplate),
+            Image(
+                painterResource(R.drawable.imagetemplate),
                 contentDescription = null,
-                contentScale = ContentScale.FillHeight)
+                contentScale = ContentScale.FillHeight
+            )
 
-            Column(modifier = Modifier.weight(1f).fillMaxHeight().padding(8.dp,0.dp), verticalArrangement = Arrangement.Center) {
-                Text(text = "Metro Javier Prado", style = MaterialTheme.typography.titleMedium)
-                Text(text = "Av Javier Prado 123", style = MaterialTheme.typography.labelSmall)
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(8.dp, 0.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = stopName, style = MaterialTheme.typography.titleMedium)
+                Text(text = address, style = MaterialTheme.typography.labelSmall)
             }
 
-            Row(modifier = Modifier.fillMaxHeight().padding(8.dp,0.dp), verticalAlignment = Alignment.CenterVertically) {
-
-                IconButton(onClick = {}, modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(Color.Red)) {
+            Row(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(8.dp, 0.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(
+                    onClick = onDelete,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(Color.Red)
+                ) {
                     Icon(Icons.Default.Delete, contentDescription = null, tint = Color.White)
                 }
-                Spacer(modifier = Modifier.padding(4.dp,0.dp))
-                IconButton(onClick = {}, modifier = Modifier.clip(RoundedCornerShape(8.dp)).background(MaterialTheme.colorScheme.primary)) {
+                Spacer(modifier = Modifier.padding(4.dp, 0.dp))
+                IconButton(
+                    onClick = onEdit,
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(8.dp))
+                        .background(MaterialTheme.colorScheme.primary)
+                ) {
                     Icon(Icons.Default.Edit, contentDescription = null, tint = Color.White)
                 }
             }
-
         }
     }
 }
 
 @Composable
 @Preview
-fun StopCardPreview(){
+fun StopCardPreview() {
     StopCard()
 }

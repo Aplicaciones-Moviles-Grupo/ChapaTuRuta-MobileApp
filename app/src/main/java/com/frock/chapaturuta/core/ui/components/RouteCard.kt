@@ -1,8 +1,8 @@
 package com.frock.chapaturuta.core.ui.components
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -30,32 +30,71 @@ import com.frock.chapaturuta.R
 import com.frock.chapaturuta.core.ui.theme.AppTheme
 
 @Composable
-fun RouteCard(isActive: Boolean){
-    Card(modifier = Modifier.padding(8.dp)
-        .height(80.dp)
-        .border(width = 2.dp, color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(8.dp))) {
-        Row(modifier = Modifier.fillMaxHeight()) {
-            Image(painterResource(R.drawable.imagetemplate),
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight)
+fun RouteCard(
+    routeName: String = "Ruta L-M-V",
+    stops: String = "Stop 1 -> Stop 2 -> Stop 3",
+    status: String = "Enabled",
+    onClick: () -> Unit = {}
+) {
+    val isActive = status.equals("Enabled", ignoreCase = true)
 
-            Column(modifier = Modifier.weight(1f).fillMaxHeight().padding(8.dp,0.dp), verticalArrangement = Arrangement.Center) {
-                Text(text = "Ruta L-M-V", style = MaterialTheme.typography.titleMedium)
-                Text(text = "Stop 1 -> Stop 2 -> Stop 3", style = MaterialTheme.typography.labelSmall)
+    Card(
+        modifier = Modifier
+            .padding(8.dp)
+            .height(80.dp)
+            .border(
+                width = 2.dp,
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .clickable { onClick() }
+    ) {
+        Row(modifier = Modifier.fillMaxHeight()) {
+            Image(
+                painterResource(R.drawable.imagetemplate),
+                contentDescription = null,
+                contentScale = ContentScale.FillHeight
+            )
+
+            Column(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxHeight()
+                    .padding(8.dp, 0.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                Text(text = routeName, style = MaterialTheme.typography.titleMedium)
+                Text(text = stops, style = MaterialTheme.typography.labelSmall)
             }
 
-            Column(modifier = Modifier.fillMaxHeight().padding(8.dp,0.dp), verticalArrangement = Arrangement.Center) {
-
-                if(isActive){
-                    Button(onClick = {}, colors = ButtonDefaults.buttonColors(containerColor = Color.Green, contentColor = Color.White)) {
+            Column(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .padding(8.dp, 0.dp),
+                verticalArrangement = Arrangement.Center
+            ) {
+                if (isActive) {
+                    Button(
+                        onClick = {},
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Green,
+                            contentColor = Color.White
+                        )
+                    ) {
                         Icon(Icons.Default.DirectionsCar, contentDescription = null)
-                        Spacer(modifier = Modifier.padding(4.dp,0.dp))
+                        Spacer(modifier = Modifier.padding(4.dp, 0.dp))
                         Text("Active")
                     }
-                }else{
-                    Button(onClick = {}, colors = ButtonDefaults.buttonColors(containerColor = Color.Gray, contentColor = Color.White)) {
+                } else {
+                    Button(
+                        onClick = {},
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Gray,
+                            contentColor = Color.White
+                        )
+                    ) {
                         Icon(Icons.Default.DirectionsCar, contentDescription = null)
-                        Spacer(modifier = Modifier.padding(4.dp,0.dp))
+                        Spacer(modifier = Modifier.padding(4.dp, 0.dp))
                         Text("Disabled")
                     }
                 }
@@ -66,8 +105,8 @@ fun RouteCard(isActive: Boolean){
 
 @Composable
 @Preview
-fun RouteCardPreview(){
+fun RouteCardPreview() {
     AppTheme(dynamicColor = false) {
-        RouteCard(false)
+        RouteCard()
     }
 }
