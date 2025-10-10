@@ -10,6 +10,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.frock.chapaturuta.core.root.Main
 import com.frock.chapaturuta.core.ui.theme.AppTheme
 import com.frock.chapaturuta.features.auth.presentation.login.LoginView
 import com.frock.chapaturuta.features.auth.presentation.register.RegisterProfileView
@@ -62,13 +63,7 @@ fun AppNav() {
         }
 
         composable(Route.Main.route) {
-            MainScreen(
-                onLogout = {
-                    navController.navigate(Route.Login.route) {
-                        popUpTo(Route.Main.route) { inclusive = true }
-                    }
-                }
-            )
+            Main()
         }
     }
 }
