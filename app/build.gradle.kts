@@ -89,4 +89,7 @@ dependencies {
 
     // Hilt Navigation
     implementation(libs.androidx.hilt.navigation.compose)
+
+    // Data Store for Token
+    implementation(libs.androidx.datastore.preferences)
 }
