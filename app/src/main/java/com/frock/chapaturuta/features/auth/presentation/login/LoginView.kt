@@ -15,6 +15,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.frock.chapaturuta.R
 
 // Colores de la aplicación
@@ -24,9 +25,13 @@ val TextFieldColor = Color(0xFFE8E8FF)
 
 @Composable
 fun LoginView(
-    onLoginClick: (email: String, password: String) -> Unit,
+    viewModel: LoginViewModel = hiltViewModel(),
+    onLoginClick: (userId:Int)->Unit,
     onSignUpClick: () -> Unit
 ) {
+
+    val uiState by viewModel.uiState.collectAsState()
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
 
@@ -102,7 +107,7 @@ fun LoginView(
             Spacer(modifier = Modifier.height(24.dp))
 
             Button(
-                onClick = { onLoginClick(email, password) },
+                onClick = { viewModel.login(email,password) },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -132,15 +137,30 @@ fun LoginView(
                     )
                 }
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            // 🔹 Estados del UI
+            when (uiState) {
+                is LoginUiState.Loading -> {
+                    CircularProgressIndicator(color = PrimaryColor)
+                }
+                is LoginUiState.Error -> {
+                    val message = (uiState as LoginUiState.Error).message
+                    Text(
+                        text = message,
+                        color = Color.Red,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                is LoginUiState.Success -> {
+                    val user = (uiState as LoginUiState.Success).user
+                    // Llamamos a la acción de éxito (por ejemplo, navegar)
+                    onLoginClick(user.id)
+                }
+                LoginUiState.Initial -> Unit
+            }
         }
     }
 }
 
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun LoginViewPreview() {
-    LoginView(
-        onLoginClick = { _, _ -> },
-        onSignUpClick = {}
-    )
-}

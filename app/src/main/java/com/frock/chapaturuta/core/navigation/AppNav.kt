@@ -7,9 +7,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.frock.chapaturuta.core.root.Main
 import com.frock.chapaturuta.core.ui.theme.AppTheme
 import com.frock.chapaturuta.features.auth.presentation.login.LoginView
@@ -26,11 +28,16 @@ fun AppNav() {
     ) {
         composable(Route.Login.route) {
             LoginView(
-                onLoginClick = { email, password ->
-                    navController.navigate(Route.Main.route) {
-                        popUpTo(Route.Login.route) { inclusive = true }
+                onLoginClick = {userId ->
+                    navController.navigate(Route.Main.createRoute(userId)){
+                        popUpTo(Route.Login.route){inclusive = true}
                     }
                 },
+                //onLoginClick = { email, password ->
+                //navController.navigate(Route.Main.route) {
+                //popUpTo(Route.Login.route) { inclusive = true }
+                //}
+                //},
                 onSignUpClick = {
                     navController.navigate(Route.RegisterUser.route)
                 }
@@ -39,9 +46,11 @@ fun AppNav() {
 
         composable(Route.RegisterUser.route) {
             RegisterUserView(
-                onRegisterClick = { email, password, repeatPassword ->
+                onRegisterClick = { userId ->
                     // Aquí validarías y si todo OK, ir a completar perfil
-                    navController.navigate(Route.RegisterProfile.route)
+                    navController.navigate(Route.RegisterProfile.createRoute(userId)){
+                        popUpTo(Route.RegisterUser.route){inclusive = true}
+                    }
                 },
                 onCancelClick = {
                     navController.popBackStack()
@@ -49,8 +58,10 @@ fun AppNav() {
             )
         }
 
-        composable(Route.RegisterProfile.route) {
-            RegisterProfileView(
+        composable(Route.RegisterProfile.route, arguments = listOf(navArgument("userId"){type = NavType.IntType})
+        ) { backStackEntry->
+            val userId = backStackEntry.arguments?.getInt("userId")?:0
+            RegisterProfileView(userId = userId,
                 onRegisterClick = { firstName, lastName, phone, email, model, plate, color ->
                     navController.navigate(Route.Main.route) {
                         popUpTo(Route.Login.route) { inclusive = true }
@@ -62,8 +73,11 @@ fun AppNav() {
             )
         }
 
-        composable(Route.Main.route) {
-            Main()
+        composable(Route.Main.route,
+            arguments = listOf(navArgument("userId"){type = NavType.IntType})
+        ){ backStackEntry ->
+            val userId = backStackEntry.arguments?.getInt("userId")?:0
+            Main(userId =  userId)
         }
     }
 }
@@ -97,8 +111,12 @@ fun AppNavPreview() {
 }
 
 sealed class Route(val route: String) {
-    object Main : Route("main")
+    object Main : Route("main/{userId}"){
+        fun createRoute(userId:Int) = "main/$userId"
+    }
     object Login : Route("login")
     object RegisterUser : Route("register_user")
-    object RegisterProfile : Route("register_profile")
+    object RegisterProfile : Route("register_profile/{userId}"){
+        fun createRoute(userId: Int) = "register_profile/$userId"
+    }
 }

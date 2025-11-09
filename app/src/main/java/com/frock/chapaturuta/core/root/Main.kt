@@ -27,7 +27,7 @@ import com.frock.chapaturuta.features.stops.presentation.*
 import com.frock.chapaturuta.features.routes.presentation.*
 
 @Composable
-fun Main() {
+fun Main(userId: Int) {
     val navigationItems = listOf(
         NavigationItem(icon = Icons.Default.Home, label = "Home"),
         NavigationItem(icon = Icons.Default.LocationOn, label = "Stops"),
@@ -134,6 +134,6 @@ data class NavigationItem(val icon: ImageVector, val label: String)
 @Preview
 fun MainPreview() {
     AppTheme(dynamicColor = false) {
-        Main()
+        Main(1)
     }
 }
