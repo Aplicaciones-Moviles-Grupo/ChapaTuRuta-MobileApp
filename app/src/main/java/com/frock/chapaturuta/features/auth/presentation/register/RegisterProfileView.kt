@@ -18,7 +18,7 @@ import com.frock.chapaturuta.features.auth.presentation.login.PrimaryColor
 import com.frock.chapaturuta.features.auth.presentation.login.BackgroundColor
 
 @Composable
-fun RegisterProfileView(
+fun RegisterProfileView(userId: Int,
     onRegisterClick: (
         firstName: String,
         lastName: String,
@@ -220,8 +220,8 @@ fun RegisterProfileView(
 @Preview(showBackground = true, showSystemUi = true)
 @Composable
 fun RegisterProfileViewPreview() {
-    RegisterProfileView(
+    /*RegisterProfileView(
         onRegisterClick = { _, _, _, _, _, _, _ -> },
         onCancelClick = {}
-    )
+    )*/
 }

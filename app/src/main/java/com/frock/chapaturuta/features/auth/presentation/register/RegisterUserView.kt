@@ -11,18 +11,26 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.frock.chapaturuta.R
 import com.frock.chapaturuta.features.auth.presentation.login.PrimaryColor
 import com.frock.chapaturuta.features.auth.presentation.login.BackgroundColor
+import com.frock.chapaturuta.features.auth.presentation.login.LoginUiState
+import com.frock.chapaturuta.features.auth.presentation.login.LoginViewModel
 
 @Composable
 fun RegisterUserView(
-    onRegisterClick: (email: String, password: String, repeatPassword: String) -> Unit,
+    viewModel: LoginViewModel = hiltViewModel(),
+    onRegisterClick: (userId: Int) -> Unit,
     onCancelClick: () -> Unit
 ) {
+
+    val uiState by viewModel.uiState.collectAsState()
+
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var repeatPassword by remember { mutableStateOf("") }
@@ -103,7 +111,9 @@ fun RegisterUserView(
 
             // Botón Register
             Button(
-                onClick = { onRegisterClick(email, password, repeatPassword) },
+                onClick = {
+                    viewModel.register(email, password, repeatPassword)
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(56.dp),
@@ -130,15 +140,28 @@ fun RegisterUserView(
             ) {
                 Text("Cancel", fontSize = 16.sp)
             }
+
+            Spacer(modifier = Modifier.height(32.dp))
+
+            when(uiState){
+                is LoginUiState.Loading ->{
+                    CircularProgressIndicator(color = PrimaryColor)
+                }
+                is LoginUiState.Error ->{
+                    val message = (uiState as LoginUiState.Error).message
+                    Text(
+                        text = message,
+                        color = Color.Red,
+                        textAlign = TextAlign.Center
+                    )
+                }
+                is LoginUiState.Success ->{
+                    val user = (uiState as LoginUiState.Success).user
+                    onRegisterClick(user.id)
+                }
+
+                LoginUiState.Initial -> Unit
+            }
         }
     }
-}
-
-@Preview(showBackground = true, showSystemUi = true)
-@Composable
-fun RegisterUserViewPreview() {
-    RegisterUserView(
-        onRegisterClick = { _, _, _ -> },
-        onCancelClick = {}
-    )
 }
