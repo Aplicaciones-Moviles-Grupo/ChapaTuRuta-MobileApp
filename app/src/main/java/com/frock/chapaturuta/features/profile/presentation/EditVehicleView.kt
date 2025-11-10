@@ -1,67 +1,81 @@
-package com.frock.chapaturuta.features.auth.presentation.register
+package com.frock.chapaturuta.features.profile.presentation
 
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Upload
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.OutlinedButton
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import com.frock.chapaturuta.R
-import com.frock.chapaturuta.features.auth.presentation.login.PrimaryColor
 import com.frock.chapaturuta.features.auth.presentation.login.BackgroundColor
-import com.frock.chapaturuta.features.profile.presentation.ProfileUiState
-import com.frock.chapaturuta.features.profile.presentation.ProfileViewModel
+import com.frock.chapaturuta.features.auth.presentation.login.PrimaryColor
 
 @Composable
-fun RegisterProfileView(
+fun EditVehicleView(
+    profileId: Int,
     viewModel: ProfileViewModel = hiltViewModel(),
-    userId: Int,
-    onRegisterClick: (
-        profileId:Int
-    ) -> Unit,
+    onEditClick: ()->Unit,
     onCancelClick: () -> Unit
 ) {
 
-    val uiState by viewModel.uiState.collectAsState()
+    val vehicleUiState by viewModel.vehicleUiState.collectAsState()
+    //val profileUiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(userId) {
-        viewModel.getProfileByUserId(userId)
+    LaunchedEffect(profileId) {
+        viewModel.getVehicleByProfileId(profileId)
     }
 
-    when(uiState){
-        is ProfileUiState.Loading->{
+    when(vehicleUiState){
+        is VehicleUiState.Loading->{
             CircularProgressIndicator()
         }
-
-        is ProfileUiState.Error -> {
-            Text("Error: ${(uiState as ProfileUiState.Error).message}")
+        is VehicleUiState.Error->{
+            Text("Error: ${(vehicleUiState as VehicleUiState.Error).message}")
         }
+        is VehicleUiState.Success->{
+            val vehicle = (vehicleUiState as VehicleUiState.Success).vehicle
 
-        is ProfileUiState.Success ->{
-            val profile = (uiState as ProfileUiState.Success).profile
-            var firstName by remember { mutableStateOf(profile.firstName) }
-            var lastName by remember { mutableStateOf(profile.lastName) }
-            var phoneNumber by remember { mutableStateOf(profile.phoneNumber) }
-            var email by remember { mutableStateOf(profile.email) }
+            var model by remember { mutableStateOf(vehicle.model) }
+            var plate by remember { mutableStateOf(vehicle.plate) }
+            var color by remember { mutableStateOf(vehicle.color) }
 
             // Imagen nueva seleccionada (local)
             var newImageUri by remember { mutableStateOf<Uri?>(null) }
@@ -72,7 +86,6 @@ fun RegisterProfileView(
             ) { uri: Uri? ->
                 uri?.let { newImageUri = it }
             }
-
 
             Surface(
                 modifier = Modifier.fillMaxSize(),
@@ -91,7 +104,7 @@ fun RegisterProfileView(
                     )*/
 
                     Text(
-                        text = "Create Profile",
+                        text = "Edit Vehicle",
                         fontSize = 24.sp,
                         fontWeight = FontWeight.Bold
                     )
@@ -100,8 +113,7 @@ fun RegisterProfileView(
 
                     Box(
                         modifier = Modifier
-                            .size(96.dp)
-                            .clip(CircleShape)
+                            .size(140.dp)
                             .background(Color.LightGray)
                     ) {
                         if(newImageUri != null){
@@ -113,7 +125,7 @@ fun RegisterProfileView(
                             )
                         }else{
                             AsyncImage(
-                                model = profile.profileImageUrl,
+                                model = vehicle.vehicleImageUrl,
                                 contentDescription = "",
                                 modifier = Modifier.height(96.dp)
                             )
@@ -132,9 +144,12 @@ fun RegisterProfileView(
                         Text("Upload Image")
                     }
 
-                    // Main Information
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Vehicle Information
                     Text(
-                        text = "Main Information",
+                        text = "Vehicle Information",
                         fontSize = 14.sp,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier.align(Alignment.Start)
@@ -143,35 +158,9 @@ fun RegisterProfileView(
                     Spacer(modifier = Modifier.height(8.dp))
 
                     OutlinedTextField(
-                        value = firstName,
-                        onValueChange = { firstName = it },
-                        label = { Text("First Name") },
-                        modifier = Modifier.weight(1f),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.White,
-                            focusedContainerColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-                    Spacer(modifier = Modifier.width(8.dp))
-                    OutlinedTextField(
-                        value = lastName,
-                        onValueChange = { lastName = it },
-                        label = { Text("Last Name") },
-                        modifier = Modifier.weight(1f),
-                        colors = OutlinedTextFieldDefaults.colors(
-                            unfocusedContainerColor = Color.White,
-                            focusedContainerColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(12.dp)
-                    )
-
-                    Spacer(modifier = Modifier.height(12.dp))
-
-                    OutlinedTextField(
-                        value = phoneNumber,
-                        onValueChange = { phoneNumber = it },
-                        label = { Text("Phone (+51)") },
+                        value = model,
+                        onValueChange = { model = it },
+                        label = { Text("Model") },
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = Color.White,
@@ -183,9 +172,23 @@ fun RegisterProfileView(
                     Spacer(modifier = Modifier.height(12.dp))
 
                     OutlinedTextField(
-                        value = email,
-                        onValueChange = { email = it },
-                        label = { Text("Email") },
+                        value = plate,
+                        onValueChange = { plate = it },
+                        label = { Text("Plate (P6L782)") },
+                        modifier = Modifier.fillMaxWidth(),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            unfocusedContainerColor = Color.White,
+                            focusedContainerColor = Color.White
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    OutlinedTextField(
+                        value = color,
+                        onValueChange = { color = it },
+                        label = { Text("Color") },
                         modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = Color.White,
@@ -199,9 +202,8 @@ fun RegisterProfileView(
                     // Botón Register
                     Button(
                         onClick = {
-                            viewModel.updateProfile(profile.id, newImageUri,
-                                firstName,lastName,email,phoneNumber, "Driver")
-                            onRegisterClick(profile.id)
+                            viewModel.updateVehicle(profileId,vehicle.id, newImageUri,plate,model,color)
+                            onEditClick()
                         },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -211,7 +213,7 @@ fun RegisterProfileView(
                         ),
                         shape = RoundedCornerShape(28.dp)
                     ) {
-                        Text("Register", fontSize = 16.sp)
+                        Text("Update Vehicle", fontSize = 16.sp)
                     }
 
                     Spacer(modifier = Modifier.height(12.dp))
@@ -231,11 +233,9 @@ fun RegisterProfileView(
                     }
                 }
             }
-        }
 
+        }
         else -> {}
     }
 
-
 }
-

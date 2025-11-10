@@ -20,24 +20,26 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.frock.chapaturuta.R
 import com.frock.chapaturuta.core.ui.theme.AppTheme
+import com.frock.chapaturuta.features.profile.domain.models.Vehicle
 
 @Composable
-fun VehicleCard(){
+fun VehicleCard(vehicle: Vehicle?){
 
     Card(modifier = Modifier.padding(8.dp)
         .height(128.dp)
         .border(width = 2.dp, color = MaterialTheme.colorScheme.primary, shape = RoundedCornerShape(8.dp))) {
         Row(modifier = Modifier.fillMaxHeight()) {
-            Image(painterResource(R.drawable.vehicleprofile),
+            AsyncImage(model = vehicle?.vehicleImageUrl ?: "",
                 contentDescription = null,
                 modifier = Modifier.weight(1f),
                 contentScale = ContentScale.FillHeight)
             Column(modifier = Modifier.weight(1f).fillMaxHeight().padding(8.dp,0.dp), verticalArrangement = Arrangement.Center) {
-                Text(text = "Model:  Toyota Yaris")
-                Text(text = "Plate:  F6L802")
-                Text(text = "Color: Blue")
+                Text(text = "Model:  ${vehicle?.model?:""}")
+                Text(text = "Plate:  ${vehicle?.plate?:""}")
+                Text(text = "Color: ${vehicle?.color?:""}")
             }
         }
     }
@@ -47,6 +49,6 @@ fun VehicleCard(){
 @Preview
 fun VehicleCardPreview(){
     AppTheme(dynamicColor = false) {
-        VehicleCard()
+        //VehicleCard()
     }
 }
