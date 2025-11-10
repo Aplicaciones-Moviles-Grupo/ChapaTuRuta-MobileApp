@@ -2,6 +2,7 @@ package com.frock.chapaturuta.core.data.di
 
 import com.frock.chapaturuta.core.data.network.AuthInterceptor
 import com.frock.chapaturuta.features.auth.data.remote.services.AuthService
+import com.frock.chapaturuta.features.profile.data.remote.services.ProfileService
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -27,7 +28,7 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    fun provieOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient{
+    fun provideOkHttpClient(authInterceptor: AuthInterceptor): OkHttpClient{
         return OkHttpClient.Builder()
             .addInterceptor(authInterceptor).build()
     }
@@ -48,6 +49,12 @@ object RemoteModule {
     @Singleton
     fun provideAuthService(retrofit: Retrofit): AuthService{
         return retrofit.create(AuthService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideProfileService(retrofit: Retrofit): ProfileService{
+        return retrofit.create(ProfileService::class.java)
     }
 
 }

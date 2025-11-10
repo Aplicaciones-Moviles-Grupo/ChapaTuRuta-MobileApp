@@ -17,6 +17,7 @@ import com.frock.chapaturuta.core.ui.theme.AppTheme
 import com.frock.chapaturuta.features.auth.presentation.login.LoginView
 import com.frock.chapaturuta.features.auth.presentation.register.RegisterProfileView
 import com.frock.chapaturuta.features.auth.presentation.register.RegisterUserView
+import com.frock.chapaturuta.features.profile.presentation.RegisterVehicleView
 
 @Composable
 fun AppNav() {
@@ -33,11 +34,6 @@ fun AppNav() {
                         popUpTo(Route.Login.route){inclusive = true}
                     }
                 },
-                //onLoginClick = { email, password ->
-                //navController.navigate(Route.Main.route) {
-                //popUpTo(Route.Login.route) { inclusive = true }
-                //}
-                //},
                 onSignUpClick = {
                     navController.navigate(Route.RegisterUser.route)
                 }
@@ -62,8 +58,8 @@ fun AppNav() {
         ) { backStackEntry->
             val userId = backStackEntry.arguments?.getInt("userId")?:0
             RegisterProfileView(userId = userId,
-                onRegisterClick = { firstName, lastName, phone, email, model, plate, color ->
-                    navController.navigate(Route.Main.route) {
+                onRegisterClick = { profileId ->
+                    navController.navigate(Route.RegisterVehicle.createRoute(profileId)) {
                         popUpTo(Route.Login.route) { inclusive = true }
                     }
                 },
@@ -72,6 +68,36 @@ fun AppNav() {
                 }
             )
         }
+
+        composable(Route.RegisterVehicle.route, arguments = listOf(navArgument("profileId"){type = NavType.IntType})
+        ) { backStackEntry->
+            val profileId = backStackEntry.arguments?.getInt("profileId")?:0
+            RegisterVehicleView(profileId = profileId,
+                onRegisterClick = { userId ->
+                    navController.navigate(Route.Main.createRoute(userId)) {
+                        popUpTo(Route.Login.route) { inclusive = true }
+                    }
+                },
+                onCancelClick = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        /*composable(Route.RegisterProfile.route, arguments = listOf(navArgument("userId"){type = NavType.IntType})
+        ) { backStackEntry->
+            val userId = backStackEntry.arguments?.getInt("userId")?:0
+            RegisterProfileView(userId = userId,
+                onRegisterClick = { profileId ->
+                    navController.navigate(Route.Main.route) {
+                        popUpTo(Route.Login.route) { inclusive = true }
+                    }
+                },
+                onCancelClick = {
+                    navController.popBackStack()
+                }
+            )
+        }*/
 
         composable(Route.Main.route,
             arguments = listOf(navArgument("userId"){type = NavType.IntType})
@@ -118,5 +144,9 @@ sealed class Route(val route: String) {
     object RegisterUser : Route("register_user")
     object RegisterProfile : Route("register_profile/{userId}"){
         fun createRoute(userId: Int) = "register_profile/$userId"
+    }
+
+    object RegisterVehicle: Route("register_vehicle/{profileId}"){
+        fun createRoute(profileId: Int) = "register_vehicle/$profileId"
     }
 }
