@@ -18,11 +18,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.frock.chapaturuta.core.ui.theme.AppTheme
 import com.frock.chapaturuta.features.home.presentation.Home
+import com.frock.chapaturuta.features.profile.domain.models.Profile
+import com.frock.chapaturuta.features.profile.presentation.EditProfileView
+import com.frock.chapaturuta.features.profile.presentation.EditVehicleView
+import com.frock.chapaturuta.features.profile.presentation.ProfileView
 import com.frock.chapaturuta.features.stops.presentation.*
 import com.frock.chapaturuta.features.routes.presentation.*
 
@@ -56,8 +62,8 @@ fun Main(userId: Int) {
                                 2 -> navController.navigate("routes") {
                                     popUpTo("routes") { inclusive = true }
                                 }
-                                3 -> navController.navigate("profile") {
-                                    popUpTo("profile") { inclusive = true }
+                                3 -> navController.navigate("profile/${userId}") {
+                                    popUpTo("profile/${userId}") { inclusive = true }
                                 }
                             }
                         },
@@ -120,10 +126,37 @@ fun Main(userId: Int) {
                 )
             }
 
-            composable("profile") {
+            composable("profile/{userId}", arguments = listOf(navArgument("userId"){type=
+                NavType.IntType})) { backStackEntry->
+                val userId = backStackEntry.arguments?.getInt("userId")?:0
                 selectedIndex.intValue = 3
-                Text(text = "Profile")
+                ProfileView(userId,
+                    onEditProfile = { profileId ->
+                        navController.navigate("profile/edit/${profileId}")},
+                    onEditVehicle = {profileId ->
+                        navController.navigate("profile/${profileId}/vehicle/edit")
+                    }
+                )
             }
+
+            composable("profile/edit/{profileId}", arguments = listOf(navArgument("profileId"){type =
+                NavType.IntType})){ backStackEntry->
+                val profileId = backStackEntry.arguments?.getInt("profileId")?:0
+                EditProfileView(profileId,
+                    onEditClick = {navController.popBackStack()},
+                    onCancelClick = {navController.popBackStack()}
+                    )
+            }
+
+            composable("profile/{profileId}/vehicle/edit", arguments = listOf(navArgument("profileId"){type =
+                NavType.IntType})){ backStackEntry->
+                val profileId = backStackEntry.arguments?.getInt("profileId")?:0
+                // EditVehicleView to be implemented
+                EditVehicleView(profileId,
+                    onEditClick = {navController.popBackStack()},
+                    onCancelClick = {navController.popBackStack()}
+                )
+                }
         }
     }
 }

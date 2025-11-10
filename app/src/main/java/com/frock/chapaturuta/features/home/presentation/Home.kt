@@ -81,7 +81,7 @@ fun Home(){
             }
         }
 
-        VehicleCard()
+        //VehicleCard()
 
         Row(modifier = Modifier.height(48.dp).fillMaxWidth().padding(8.dp,4.dp), verticalAlignment = Alignment.CenterVertically) {
             Text(

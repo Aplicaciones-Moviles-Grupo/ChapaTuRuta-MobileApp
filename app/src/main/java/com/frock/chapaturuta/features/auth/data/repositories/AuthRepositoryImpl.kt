@@ -23,12 +23,12 @@ class AuthRepositoryImpl @Inject constructor(private val authService: AuthServic
                             singInResponseDto.email,
                             singInResponseDto.token
                         )
-                    } ?: throw kotlin.Exception("Response is empty")
+                    } ?: throw Exception("Response is empty")
                 } else {
-                    throw kotlin.Exception("Error HTTP: ${response.code()} - ${response.message()}")
+                    throw Exception("Error HTTP: ${response.code()} - ${response.message()}")
                 }
             } catch (e: Exception) {
-                throw kotlin.Exception("Error al iniciar sesión: ${e.message}")
+                throw Exception("Error al iniciar sesión: ${e.message}")
             }
         }
 
@@ -43,12 +43,12 @@ class AuthRepositoryImpl @Inject constructor(private val authService: AuthServic
                             signUpResponseDto.email,
                             signUpResponseDto.token
                         )
-                    } ?: throw kotlin.Exception("Response is empty")
+                    } ?: throw Exception("Response is empty")
                 } else {
-                    throw kotlin.Exception("Error HTTP: ${response.code()} - ${response.message()}")
+                    throw Exception("Error HTTP: ${response.code()} - ${response.message()}")
                 }
             } catch (e: Exception) {
-                throw kotlin.Exception("Error durante el registro: ${e.message}")
+                throw Exception("Error durante el registro: ${e.message}")
             }
         }
 }
