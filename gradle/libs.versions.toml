@@ -20,6 +20,10 @@ materialIconsExtended = "1.7.8" # Material icons extended
 kspVersion = "2.2.20-2.0.3" # ksp plugin
 datastorePreferences = "1.1.7" # data store for token
 
+mapsCompose = "6.12.1"
+playServicesMaps = "19.2.0"
+foundationLayout = "1.9.3"
+
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
@@ -68,6 +72,10 @@ androidx-material-icons-extended = { group = "androidx.compose.material", name =
 
 # Data Store
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
+
+maps-compose = { module = "com.google.maps.android:maps-compose", version.ref = "mapsCompose" }
+play-services-maps = { module = "com.google.android.gms:play-services-maps", version.ref = "playServicesMaps" }
+androidx-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

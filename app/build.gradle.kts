@@ -92,4 +92,9 @@ dependencies {
 
     // Data Store for Token
     implementation(libs.androidx.datastore.preferences)
+
+    // implementation for Google Maps
+    implementation(libs.maps.compose)
+    implementation(libs.play.services.maps)
+    implementation(libs.androidx.foundation.layout)
 }
