@@ -59,6 +59,13 @@ class LoginViewModel @Inject constructor(
         }
     }
 
+    fun signOut() {
+        viewModelScope.launch {
+            authDataStore.clearToken()
+            resetState()
+        }
+    }
+
     fun resetState() {
         _uiState.value = LoginUiState.Initial
     }
