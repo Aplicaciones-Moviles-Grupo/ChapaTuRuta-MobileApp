@@ -9,11 +9,14 @@
         android:allowBackup="true"
         android:dataExtractionRules="@xml/data_extraction_rules"
         android:fullBackupContent="@xml/backup_rules"
-        android:icon="@mipmap/ic_launcher"
+        android:icon="@mipmap/chapa_tu_ruta_logo"
         android:label="@string/app_name"
-        android:roundIcon="@mipmap/ic_launcher_round"
+        android:roundIcon="@mipmap/chapa_tu_ruta_logo_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.ChapaTuRuta">
+
+        <meta-data android:name="com.google.android.geo.API_KEY" android:value="AIzaSyDg-lgll2qxnJ7aHcKQY5aBH5veN3kuRPY"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

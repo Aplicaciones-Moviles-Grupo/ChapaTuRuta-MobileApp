@@ -28,14 +28,15 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import coil3.compose.AsyncImage
 import com.frock.chapaturuta.R
+import com.frock.chapaturuta.features.stops.domain.models.Stop
 
 @Composable
-fun StopCard(
-    stopName: String = "Metro Javier Prado",
-    address: String = "Av Javier Prado 123",
-    onDelete: () -> Unit = {},
-    onEdit: () -> Unit = {}
+fun StopCard(stop: Stop,
+             onDelete: () -> Unit = {},
+             onEdit: () -> Unit = {},
+             onSelect: ()-> Unit = {}
 ) {
     Card(
         modifier = Modifier
@@ -45,13 +46,14 @@ fun StopCard(
                 width = 2.dp,
                 color = MaterialTheme.colorScheme.primary,
                 shape = RoundedCornerShape(8.dp)
-            )
+            ),
+        onClick = onSelect
     ) {
         Row(modifier = Modifier.fillMaxHeight()) {
-            Image(
-                painterResource(R.drawable.imagetemplate),
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight
+            AsyncImage(
+                model = stop.stopImageUrl,
+                contentDescription = "",
+                modifier = Modifier.height(96.dp)
             )
 
             Column(
@@ -61,8 +63,8 @@ fun StopCard(
                     .padding(8.dp, 0.dp),
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = stopName, style = MaterialTheme.typography.titleMedium)
-                Text(text = address, style = MaterialTheme.typography.labelSmall)
+                Text(text = stop.name, style = MaterialTheme.typography.titleMedium)
+                Text(text = stop.address, style = MaterialTheme.typography.labelSmall)
             }
 
             Row(
@@ -79,7 +81,8 @@ fun StopCard(
                 ) {
                     Icon(Icons.Default.Delete, contentDescription = null, tint = Color.White)
                 }
-                Spacer(modifier = Modifier.padding(4.dp, 0.dp))
+
+                /*Spacer(modifier = Modifier.padding(4.dp, 0.dp))
                 IconButton(
                     onClick = onEdit,
                     modifier = Modifier
@@ -87,7 +90,7 @@ fun StopCard(
                         .background(MaterialTheme.colorScheme.primary)
                 ) {
                     Icon(Icons.Default.Edit, contentDescription = null, tint = Color.White)
-                }
+                }*/
             }
         }
     }
@@ -96,5 +99,5 @@ fun StopCard(
 @Composable
 @Preview
 fun StopCardPreview() {
-    StopCard()
+    //StopCard()
 }

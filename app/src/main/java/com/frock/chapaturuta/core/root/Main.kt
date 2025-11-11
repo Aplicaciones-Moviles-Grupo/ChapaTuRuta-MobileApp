@@ -33,7 +33,7 @@ import com.frock.chapaturuta.features.stops.presentation.*
 import com.frock.chapaturuta.features.routes.presentation.*
 
 @Composable
-fun Main(userId: Int) {
+fun Main(userId: Int, onSignOut: () -> Unit) {
     val navigationItems = listOf(
         NavigationItem(icon = Icons.Default.Home, label = "Home"),
         NavigationItem(icon = Icons.Default.LocationOn, label = "Stops"),
@@ -53,11 +53,11 @@ fun Main(userId: Int) {
                         onClick = {
                             selectedIndex.intValue = index
                             when (index) {
-                                0 -> navController.navigate("home") {
-                                    popUpTo("home") { inclusive = true }
+                                0 -> navController.navigate("home/${userId}") {
+                                    popUpTo("home/${userId}") { inclusive = true }
                                 }
-                                1 -> navController.navigate("stops") {
-                                    popUpTo("stops") { inclusive = true }
+                                1 -> navController.navigate("stops/${userId}") {
+                                    popUpTo("stops/${userId}") { inclusive = true }
                                 }
                                 2 -> navController.navigate("routes") {
                                     popUpTo("routes") { inclusive = true }
@@ -76,25 +76,32 @@ fun Main(userId: Int) {
     ) { paddingValues ->
         NavHost(
             navController = navController,
-            startDestination = "home",
+            startDestination = "home/${userId}",
             modifier = Modifier.padding(paddingValues)
         ) {
-            composable("home") {
+            composable("home/{userId}", arguments = listOf(navArgument("userId"){type = NavType.IntType})
+            ) { backStackEntry ->
+                val userId = backStackEntry.arguments?.getInt("userId") ?: 0
                 selectedIndex.intValue = 0
-                Home()
+                Home(userId)
             }
 
             // Stops navigation
-            composable("stops") {
+            composable("stops/{userId}", arguments =  listOf(navArgument("userId"){type=
+                NavType.IntType})) { backStackEntry ->
+                val userId = backStackEntry.arguments?.getInt("userId") ?: 0
                 selectedIndex.intValue = 1
-                StopsView(
-                    onNavigateToCreateStop = { navController.navigate("stops/create") },
+                StopsView(userId,
+                    onNavigateToCreateStop = { navController.navigate("stops/create/$userId") },
                     onNavigateToEditStop = { stopId -> navController.navigate("stops/edit/$stopId") }
                 )
             }
-            composable("stops/create") {
+            composable("stops/create/{userId}", arguments = listOf(navArgument("userId"){type=
+                NavType.IntType})) { backstackEntry ->
+                val userId = backstackEntry.arguments?.getInt("userId") ?: 0
                 CreateStopView(
-                    onNavigateBack = { navController.popBackStack() }
+                    onNavigateBack = { navController.popBackStack() },
+                    profileId = userId
                 )
             }
             composable("stops/edit/{stopId}") { backStackEntry ->
@@ -135,7 +142,8 @@ fun Main(userId: Int) {
                         navController.navigate("profile/edit/${profileId}")},
                     onEditVehicle = {profileId ->
                         navController.navigate("profile/${profileId}/vehicle/edit")
-                    }
+                    },
+                    onSignOut= onSignOut
                 )
             }
 
@@ -163,10 +171,3 @@ fun Main(userId: Int) {
 
 data class NavigationItem(val icon: ImageVector, val label: String)
 
-@Composable
-@Preview
-fun MainPreview() {
-    AppTheme(dynamicColor = false) {
-        Main(1)
-    }
-}

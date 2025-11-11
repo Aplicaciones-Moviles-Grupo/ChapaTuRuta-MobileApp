@@ -29,6 +29,7 @@ import coil3.compose.AsyncImage
 import coil3.compose.rememberAsyncImagePainter
 import com.frock.chapaturuta.core.ui.components.ConfigurationCard
 import com.frock.chapaturuta.core.ui.components.VehicleCard
+import com.frock.chapaturuta.features.auth.presentation.login.LoginViewModel
 import com.frock.chapaturuta.features.profile.domain.models.Profile
 
 @Composable
@@ -36,8 +37,10 @@ fun ProfileView(
 
     userId:Int,
     viewModel: ProfileViewModel = hiltViewModel(),
+    loginViewModel: LoginViewModel = hiltViewModel(),
     onEditProfile:(profileId:Int)->Unit,
-    onEditVehicle:(profileId:Int)->Unit){
+    onEditVehicle:(profileId:Int)->Unit,
+    onSignOut:()->Unit ){
 
     val profileUiState by viewModel.uiState.collectAsState()
 
@@ -122,6 +125,10 @@ fun ProfileView(
 
                 ConfigurationCard("Edit Profile") { onEditProfile(profile.id)}
                 ConfigurationCard("Edit Vehicle") { onEditVehicle(profile.id)}
+                ConfigurationCard("Sign Out") {
+                        loginViewModel.signOut()
+                        onSignOut()
+                    }
             }
         }
 

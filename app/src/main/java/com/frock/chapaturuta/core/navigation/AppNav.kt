@@ -103,7 +103,9 @@ fun AppNav() {
             arguments = listOf(navArgument("userId"){type = NavType.IntType})
         ){ backStackEntry ->
             val userId = backStackEntry.arguments?.getInt("userId")?:0
-            Main(userId =  userId)
+            Main(userId =  userId){
+                navController.navigate(Route.Login.route)
+            }
         }
     }
 }

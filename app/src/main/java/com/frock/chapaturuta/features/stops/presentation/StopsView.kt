@@ -21,21 +21,39 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.frock.chapaturuta.core.ui.components.StopCard
 import com.frock.chapaturuta.R
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
+import kotlinx.coroutines.launch
 
 @Composable
 fun StopsView(
+    profileId:Int,
     onNavigateToCreateStop: () -> Unit = {},
-    onNavigateToEditStop: (String) -> Unit = {}
+    onNavigateToEditStop: (String) -> Unit = {},
+    viewModel: StopViewModel = hiltViewModel()
 ) {
-    var searchQuery by remember { mutableStateOf("") }
 
-    // Mock data
-    val stops = listOf(
-        Stop("Stop Name #01", "Av. Javier Prado 123"),
-        Stop("Stop Name #02", "Av. Javier Prado 123")
-    )
+    val stops by viewModel.stops.collectAsState()
+
+    // Cámara inicial
+    val cameraPositionState = rememberCameraPositionState {
+        position = CameraPosition.fromLatLngZoom(LatLng(-12.0464, -77.0428), 12f)
+    }
+    var tempLatLng by remember { mutableStateOf<LatLng?>(null) }
+
+    val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(profileId) {
+        viewModel.getAllStops(profileId)
+    }
 
     Column(
         modifier = Modifier
@@ -45,25 +63,9 @@ fun StopsView(
     ) {
         Text(
             text = "Stops",
-            fontSize = 24.sp,
+            fontSize = 32.sp,
             fontWeight = FontWeight.Bold,
             modifier = Modifier.padding(bottom = 16.dp)
-        )
-
-        // Search bar
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            placeholder = { Text("Search a Stop") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = Color.White,
-                focusedContainerColor = Color.White
-            )
         )
 
         // Create Stop button
@@ -71,8 +73,8 @@ fun StopsView(
             onClick = onNavigateToCreateStop,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
-                .padding(bottom = 16.dp),
+                .height(64.dp)
+                .padding(bottom = 20.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6366F1)),
             shape = RoundedCornerShape(12.dp)
         ) {
@@ -81,42 +83,45 @@ fun StopsView(
             Text("Create Stop", fontSize = 16.sp)
         }
 
-        // Map placeholder
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(380.dp)
-                .padding(bottom = 16.dp),
-            contentAlignment = Alignment.Center
+
+        // Mapa
+        GoogleMap(
+            modifier = Modifier.fillMaxWidth().weight(1f),
+            cameraPositionState = cameraPositionState
         ) {
-            androidx.compose.foundation.Image(
-                painter = painterResource(id = R.drawable.map_placeholder),
-                contentDescription = "Map",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit
-            )
+            // Dibujamos todos los paraderos
+            stops.forEach { stop ->
+                Marker(
+                    state = rememberUpdatedMarkerState(position = LatLng(stop.latitude, stop.longitude)),
+                    title = stop.name,
+                    snippet = stop.address
+                )
+            }
         }
 
         // Stops list
         LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+            verticalArrangement = Arrangement.spacedBy(8.dp),
+            modifier= Modifier.height(180.dp)
         ) {
             items(stops) { stop ->
                 StopCard(
-                    stopName = stop.name,
-                    address = stop.address,
-                    onDelete = { },
-                    onEdit = { onNavigateToEditStop(stop.name) }
+                    stop = stop,
+                    onDelete = { viewModel.deleteStop(stop.id) },
+                    onEdit = { onNavigateToEditStop(stop.name) },
+                    onSelect = {
+                        coroutineScope.launch {
+                            cameraPositionState.animate(
+                                update = CameraUpdateFactory.newLatLngZoom(
+                                    LatLng(stop.latitude, stop.longitude),
+                                    16f // nivel de zoom deseado
+                                ),
+                                durationMs = 1000
+                            )
+                        }
+                    }
                 )
             }
         }
     }
-}
-
-data class Stop(val name: String, val address: String)
-
-@Preview(showBackground = true)
-@Composable
-fun StopsViewPreview() {
-    StopsView()
 }
