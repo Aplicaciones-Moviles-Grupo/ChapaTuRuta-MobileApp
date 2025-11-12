@@ -3,6 +3,8 @@ package com.frock.chapaturuta.core.data.di
 import com.frock.chapaturuta.core.data.network.AuthInterceptor
 import com.frock.chapaturuta.features.auth.data.remote.services.AuthService
 import com.frock.chapaturuta.features.profile.data.remote.services.ProfileService
+import com.frock.chapaturuta.features.routes.data.remote.services.DirectionsService
+import com.frock.chapaturuta.features.routes.data.remote.services.RouteService
 import com.frock.chapaturuta.features.stops.data.remote.services.GeocodingService
 import com.frock.chapaturuta.features.stops.data.remote.services.StopService
 import dagger.Module
@@ -21,26 +23,12 @@ import javax.inject.Singleton
 object RemoteModule {
 
 
+    //Backend
     @Provides
     @Singleton
     @Named("backend_url")
     fun provideApiBaseUrl():String{
         return "http://10.0.2.2:5042/api/v1/"
-    }
-
-    @Provides
-    @Singleton
-    @Named("geocoding_url")
-    fun provideGeocodingBaseUrl(): String {
-        return "https://maps.googleapis.com/"
-    }
-
-    // 🔹 Cliente HTTP para Geocoding (sin interceptor de autenticación)
-    @Provides
-    @Singleton
-    @Named("geocoding_client")
-    fun provideGeocodingOkHttpClient(): OkHttpClient {
-        return OkHttpClient.Builder().build()
     }
 
     @Provides
@@ -66,22 +54,6 @@ object RemoteModule {
 
     @Provides
     @Singleton
-    @Named("geocoding_retrofit")
-    fun provideGeocodingRetrofit(
-        @Named("geocoding_url") url: String,
-        @Named("geocoding_client") okHttpClient: OkHttpClient
-    ): Retrofit {
-        return Retrofit.Builder()
-            .baseUrl(url)
-            .client(okHttpClient)
-            .addConverterFactory(GsonConverterFactory.create())
-            .build()
-    }
-
-
-
-    @Provides
-    @Singleton
     fun provideAuthService(@Named("backend_retrofit") retrofit: Retrofit): AuthService{
         return retrofit.create(AuthService::class.java)
     }
@@ -98,10 +70,83 @@ object RemoteModule {
         return retrofit.create(StopService::class.java)
     }
 
+    @Provides
+    @Singleton
+    fun provideRouteService(@Named("backend_retrofit") retrofit: Retrofit): RouteService {
+        return retrofit.create(RouteService::class.java)
+    }
+
+
+    // Geocoding API
+    @Provides
+    @Singleton
+    @Named("geocoding_url")
+    fun provideGeocodingBaseUrl(): String {
+        return "https://maps.googleapis.com/"
+    }
+
+    // 🔹 Cliente HTTP para Geocoding (sin interceptor de autenticación)
+    @Provides
+    @Singleton
+    @Named("geocoding_client")
+    fun provideGeocodingOkHttpClient(): OkHttpClient {
+        return OkHttpClient.Builder().build()
+    }
+
+    @Provides
+    @Singleton
+    @Named("geocoding_retrofit")
+    fun provideGeocodingRetrofit(
+        @Named("geocoding_url") url: String,
+        @Named("geocoding_client") okHttpClient: OkHttpClient
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(url)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
 
     @Provides
     @Singleton
     fun provideGeocodingService(@Named("geocoding_retrofit") retrofit: Retrofit): GeocodingService {
         return retrofit.create(GeocodingService::class.java)
+    }
+
+
+
+
+    //Directions API
+    @Provides
+    @Singleton
+    @Named("directions_url")
+    fun provideDirectionsBaseUrl(): String = "https://maps.googleapis.com/"
+
+    @Provides
+    @Singleton
+    @Named("directions_client")
+    fun provideDirectionsOkHttpClient(): OkHttpClient =
+        OkHttpClient.Builder().build()
+
+    @Provides
+    @Singleton
+    @Named("directions_retrofit")
+    fun provideDirectionsRetrofit(
+        @Named("directions_url") url: String,
+        @Named("directions_client") okHttpClient: OkHttpClient
+    ): Retrofit {
+        return Retrofit.Builder()
+            .baseUrl(url)
+            .client(okHttpClient)
+            .addConverterFactory(GsonConverterFactory.create())
+            .build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideDirectionsService(
+        @Named("directions_retrofit") retrofit: Retrofit
+    ): DirectionsService{
+        return retrofit.create(DirectionsService::class.java)
     }
 }

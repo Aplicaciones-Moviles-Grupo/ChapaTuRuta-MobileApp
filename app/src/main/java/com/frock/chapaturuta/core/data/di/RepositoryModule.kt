@@ -4,6 +4,10 @@ import com.frock.chapaturuta.features.auth.data.repositories.AuthRepositoryImpl
 import com.frock.chapaturuta.features.auth.domain.repositories.AuthRepository
 import com.frock.chapaturuta.features.profile.data.repositories.ProfileRepositoryImpl
 import com.frock.chapaturuta.features.profile.domain.repositories.ProfileRepository
+import com.frock.chapaturuta.features.routes.data.repositories.DirectionsRepositoryImpl
+import com.frock.chapaturuta.features.routes.data.repositories.RouteRepositoryImpl
+import com.frock.chapaturuta.features.routes.domain.repositories.DirectionsRepository
+import com.frock.chapaturuta.features.routes.domain.repositories.RouteRepository
 import com.frock.chapaturuta.features.stops.data.repositories.GeocodingRepositoryImpl
 import com.frock.chapaturuta.features.stops.data.repositories.StopRepositoryImpl
 import com.frock.chapaturuta.features.stops.domain.repositories.GeocodingRepository
@@ -28,4 +32,10 @@ interface RepositoryModule {
 
     @Binds
     fun provideGeocodingRepository(impl: GeocodingRepositoryImpl): GeocodingRepository
+
+    @Binds
+    fun provideRouteRepository(impl: RouteRepositoryImpl): RouteRepository
+
+    @Binds
+    fun provideDirectionsRepository(impl: DirectionsRepositoryImpl): DirectionsRepository
 }
