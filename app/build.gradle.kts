@@ -97,4 +97,6 @@ dependencies {
     implementation(libs.maps.compose)
     implementation(libs.play.services.maps)
     implementation(libs.androidx.foundation.layout)
+
+    implementation(libs.android.maps.utils)
 }
