@@ -26,13 +26,13 @@ fun EditRouteView(
     onNavigateBack: () -> Unit = {}
 ) {
     var routeName by remember { mutableStateOf("Route Name #01") }
-    val stops = remember {
+    /*val stops = remember {
         mutableStateListOf(
             StopItem("Stop Name #01", "Av. Javier Prado 123", true),
             StopItem("Stop Name #02", "Av. Javier Prado 123", true),
             StopItem("Stop Name #03", "Av. Javier Prado 123", false)
         )
-    }
+    }*/
 
     Column(
         modifier = Modifier
@@ -68,21 +68,6 @@ fun EditRouteView(
             fontWeight = FontWeight.SemiBold,
             modifier = Modifier.padding(bottom = 12.dp)
         )
-
-        // Stops list
-        LazyColumn(
-            modifier = Modifier
-                .weight(1f)
-                .padding(bottom = 16.dp),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            items(stops.size) { index ->
-                StopSelectItem(
-                    stop = stops[index],
-                    onToggle = { stops[index] = stops[index].copy(selected = !stops[index].selected) }
-                )
-            }
-        }
 
         // Map placeholder
         Box(

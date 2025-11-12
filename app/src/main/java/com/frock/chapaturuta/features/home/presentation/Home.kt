@@ -45,17 +45,22 @@ import com.frock.chapaturuta.core.ui.theme.AppTheme
 import com.frock.chapaturuta.features.profile.presentation.ProfileUiState
 import com.frock.chapaturuta.features.profile.presentation.ProfileViewModel
 import com.frock.chapaturuta.features.profile.presentation.VehicleUiState
+import com.frock.chapaturuta.features.routes.presentation.RouteViewModel
 import com.frock.chapaturuta.features.stops.presentation.StopViewModel
 import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.model.LatLng
 import kotlinx.coroutines.launch
 
 @Composable
-fun Home(userId:Int, profileViewModel: ProfileViewModel = hiltViewModel(),
-         stopViewModel: StopViewModel = hiltViewModel()){
+fun Home(userId:Int,
+         profileViewModel: ProfileViewModel = hiltViewModel(),
+         stopViewModel: StopViewModel = hiltViewModel(),
+         routeViewModel: RouteViewModel= hiltViewModel()){
 
     LaunchedEffect(userId) {
         profileViewModel.getProfileByUserId(userId)
+        profileViewModel.getVehicleByProfileId(userId)
+        routeViewModel.getAllRoutes(userId)
         stopViewModel.getAllStops(userId)
     }
 
@@ -63,6 +68,7 @@ fun Home(userId:Int, profileViewModel: ProfileViewModel = hiltViewModel(),
     val vehicleUiState by profileViewModel.vehicleUiState.collectAsState()
 
     val stops by stopViewModel.stops.collectAsState()
+    val routes by routeViewModel.routes.collectAsState()
 
     when(profileUiState){
         is ProfileUiState.Loading ->{
@@ -140,8 +146,22 @@ fun Home(userId:Int, profileViewModel: ProfileViewModel = hiltViewModel(),
                     }
                 }
 
-                RouteCard()
-                RouteCard()
+                LazyColumn(
+                    verticalArrangement = Arrangement.spacedBy(8.dp),
+                    modifier= Modifier.fillMaxWidth().weight(1f)
+                ){
+                    items(routes){ route->
+                        RouteCard(route,onChangeState = {
+                            if (route.state.equals("Active", ignoreCase = true)) {
+                                routeViewModel.inactiveRoute(route.id)
+                            } else {
+                                routeViewModel.activeRoute(route.id)
+                            }
+                        })
+                    }
+                }
+                //RouteCard()
+                //RouteCard()
 
                 Row(modifier = Modifier.height(48.dp).fillMaxWidth().padding(8.dp,4.dp), verticalAlignment = Alignment.CenterVertically) {
                     Text(
@@ -159,14 +179,12 @@ fun Home(userId:Int, profileViewModel: ProfileViewModel = hiltViewModel(),
                 // Stops list
                 LazyColumn(
                     verticalArrangement = Arrangement.spacedBy(8.dp),
-                    modifier= Modifier.height(180.dp)
+                    modifier= Modifier.fillMaxWidth().weight(1f)
                 ) {
                     items(stops) { stop ->
                         StopCard(
                             stop = stop,
-                            onDelete = { stopViewModel.deleteStop(stop.id) },
-                            onEdit = {  },
-                            onSelect = { }
+                            onDelete = { stopViewModel.deleteStop(stop.id) }
                         )
                     }
                 }
@@ -174,9 +192,6 @@ fun Home(userId:Int, profileViewModel: ProfileViewModel = hiltViewModel(),
         }
         else -> {}
     }
-
-
-
 }
 
 @Composable

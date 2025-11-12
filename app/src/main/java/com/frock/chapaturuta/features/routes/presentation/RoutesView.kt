@@ -1,5 +1,6 @@
 package com.frock.chapaturuta.features.routes.presentation
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -19,21 +20,54 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.frock.chapaturuta.core.ui.components.RouteCard
 import com.frock.chapaturuta.R
+import com.frock.chapaturuta.features.routes.domain.models.Route
+import com.frock.chapaturuta.features.stops.domain.models.Stop
+import com.google.android.gms.maps.CameraUpdateFactory
+import com.google.android.gms.maps.model.CameraPosition
+import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.LatLngBounds
+import com.google.maps.android.PolyUtil
+import com.google.maps.android.compose.GoogleMap
+import com.google.maps.android.compose.Marker
+import com.google.maps.android.compose.Polyline
+import com.google.maps.android.compose.rememberCameraPositionState
+import com.google.maps.android.compose.rememberMarkerState
+import com.google.maps.android.compose.rememberUpdatedMarkerState
+import kotlinx.coroutines.delay
 
 @Composable
-fun RoutesView(
+fun RoutesView(profileId:Int,
+               routeViewModel: RouteViewModel = hiltViewModel(),
     onNavigateToCreateRoute: () -> Unit = {},
     onNavigateToEditRoute: (String) -> Unit = {}
 ) {
-    var searchQuery by remember { mutableStateOf("") }
 
-    // Mock data
-    val routes = listOf(
-        Route("Route Name #01", "Stop 1 • Stop 2 • Stop 3", "Enabled"),
-        Route("Route Name #02", "Stop 1 • Stop 2", "Disabled")
-    )
+    val routes by routeViewModel.routes.collectAsState()
+
+    var selectedRoute by remember { mutableStateOf<Route?>(null) }
+    var stops by remember { mutableStateOf<List<Stop>>(emptyList()) }
+
+    // Estado de cámara del mapa
+    val cameraPositionState = rememberCameraPositionState{
+        position = CameraPosition.fromLatLngZoom(LatLng(-12.0464, -77.0428), 12f)
+    }
+
+    LaunchedEffect(profileId) {
+        routeViewModel.getAllRoutes(profileId)
+    }
+
+    // Obtener los paraderos de la ruta seleccionada (cuando cambia)
+    LaunchedEffect(selectedRoute) {
+        selectedRoute?.let { route ->
+            routeViewModel.getStopRoutesByRouteId(route.id)
+            delay(500) // breve espera para cargar
+            stops = routeViewModel.stopRoutes.value.map { it.stop } // asumiendo que `StopRoute` contiene un campo `stop`
+        }
+    }
+
 
     Column(
         modifier = Modifier
@@ -48,73 +82,75 @@ fun RoutesView(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Search bar
-        OutlinedTextField(
-            value = searchQuery,
-            onValueChange = { searchQuery = it },
-            placeholder = { Text("Search a Route") },
-            leadingIcon = { Icon(Icons.Default.Search, contentDescription = null) },
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(bottom = 8.dp),
-            shape = RoundedCornerShape(12.dp),
-            colors = OutlinedTextFieldDefaults.colors(
-                unfocusedContainerColor = Color.White,
-                focusedContainerColor = Color.White
-            )
-        )
-
         // Create Route button
         Button(
             onClick = onNavigateToCreateRoute,
             modifier = Modifier
                 .fillMaxWidth()
-                .height(50.dp)
+                .height(72.dp)
                 .padding(bottom = 16.dp),
             colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6366F1)),
             shape = RoundedCornerShape(12.dp)
         ) {
             Icon(Icons.Default.Add, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
-            Text("Create Route", fontSize = 16.sp)
+            Text("Create Route", fontSize = 20.sp)
         }
 
-        // Map placeholder
-        Box(
+        // 🔹 Mapa
+        GoogleMap(
             modifier = Modifier
                 .fillMaxWidth()
-                .height(380.dp)
-                .padding(bottom = 16.dp),
-            contentAlignment = Alignment.Center
+                .weight(1f),
+            cameraPositionState = cameraPositionState
         ) {
-            androidx.compose.foundation.Image(
-                painter = painterResource(id = R.drawable.map_placeholder),
-                contentDescription = "Map",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Fit
-            )
-        }
+            // Si hay ruta seleccionada → dibujar polyline y marcadores
+            selectedRoute?.let { route ->
+                val path = PolyUtil.decode(route.polylineRoute)
+                if (path.isNotEmpty()) {
+                    Polyline(
+                        points = path,
+                        color = Color(0xFF6366F1),
+                        width = 8f
+                    )
 
+                    // Mover la cámara para ajustar al recorrido
+                    LaunchedEffect(path) {
+                        val bounds = LatLngBounds.builder().apply {
+                            path.forEach { include(it) }
+                        }.build()
+                        cameraPositionState.animate(
+                            update = CameraUpdateFactory.newLatLngBounds(bounds, 100)
+                        )
+                    }
+
+                    // Dibujar marcadores de paraderos
+                    stops.forEach { stop ->
+                        Marker(
+                            state = rememberUpdatedMarkerState(position = LatLng(stop.latitude, stop.longitude)),
+                            title = stop.name,
+                            snippet = stop.address
+                        )
+                    }
+                }
+            }
+        }
         // Routes list
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(routes) { route ->
-                RouteCard(
-                    routeName = route.name,
-                    stops = route.stops,
-                    status = route.status,
-                    onClick = { onNavigateToEditRoute(route.name) }
-                )
+                RouteCard(route,
+                    onClick = { selectedRoute = route },
+                    onChangeState = {
+                        Log.d("RoutesView", "🔁 onChangeState clicked for route ${route.id} (${route.state})")
+                        if (route.state.equals("Active", ignoreCase = true)) {
+                            routeViewModel.inactiveRoute(route.id)
+                        } else {
+                            routeViewModel.activeRoute(route.id)
+                        }
+                    })
             }
         }
     }
-}
-
-data class Route(val name: String, val stops: String, val status: String)
-
-@Preview(showBackground = true)
-@Composable
-fun RoutesViewPreview() {
-    RoutesView()
 }

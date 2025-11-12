@@ -59,8 +59,8 @@ fun Main(userId: Int, onSignOut: () -> Unit) {
                                 1 -> navController.navigate("stops/${userId}") {
                                     popUpTo("stops/${userId}") { inclusive = true }
                                 }
-                                2 -> navController.navigate("routes") {
-                                    popUpTo("routes") { inclusive = true }
+                                2 -> navController.navigate("routes/${userId}") {
+                                    popUpTo("routes/${userId}") { inclusive = true }
                                 }
                                 3 -> navController.navigate("profile/${userId}") {
                                     popUpTo("profile/${userId}") { inclusive = true }
@@ -113,15 +113,19 @@ fun Main(userId: Int, onSignOut: () -> Unit) {
             }
 
             // Routes navigation
-            composable("routes") {
+            composable("routes/{profileId}", arguments = listOf(navArgument("profileId"){type=
+                NavType.IntType})){ backStackEntry->
+                val profileId = backStackEntry.arguments?.getInt("profileId") ?: 0
                 selectedIndex.intValue = 2
-                RoutesView(
-                    onNavigateToCreateRoute = { navController.navigate("routes/create") },
+                RoutesView(profileId,
+                    onNavigateToCreateRoute = { navController.navigate("routes/create/${profileId}") },
                     onNavigateToEditRoute = { routeId -> navController.navigate("routes/edit/$routeId") }
                 )
             }
-            composable("routes/create") {
-                CreateRouteView(
+            composable("routes/create/{profileId}", arguments = listOf(navArgument("profileId"){type =
+                NavType.IntType})) { backStackEntry->
+                val profileId = backStackEntry.arguments?.getInt("profileId") ?: 0
+                CreateRouteView( profileId,
                     onNavigateBack = { navController.popBackStack() }
                 )
             }

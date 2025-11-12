@@ -28,20 +28,19 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.frock.chapaturuta.R
 import com.frock.chapaturuta.core.ui.theme.AppTheme
+import com.frock.chapaturuta.features.routes.domain.models.Route
 
 @Composable
-fun RouteCard(
-    routeName: String = "Ruta L-M-V",
-    stops: String = "Stop 1 -> Stop 2 -> Stop 3",
-    status: String = "Enabled",
-    onClick: () -> Unit = {}
+fun RouteCard( route: Route,
+    onClick: () -> Unit = {},
+    onChangeState: ()->Unit
 ) {
-    val isActive = status.equals("Enabled", ignoreCase = true)
+    val isActive = route.state.equals("Active",ignoreCase = true) //status.equals("Enabled", ignoreCase = true)
 
     Card(
         modifier = Modifier
             .padding(8.dp)
-            .height(80.dp)
+            .height(96.dp)
             .border(
                 width = 2.dp,
                 color = MaterialTheme.colorScheme.primary,
@@ -50,11 +49,6 @@ fun RouteCard(
             .clickable { onClick() }
     ) {
         Row(modifier = Modifier.fillMaxHeight()) {
-            Image(
-                painterResource(R.drawable.imagetemplate),
-                contentDescription = null,
-                contentScale = ContentScale.FillHeight
-            )
 
             Column(
                 modifier = Modifier
@@ -63,8 +57,9 @@ fun RouteCard(
                     .padding(8.dp, 0.dp),
                 verticalArrangement = Arrangement.Center
             ) {
-                Text(text = routeName, style = MaterialTheme.typography.titleMedium)
-                Text(text = stops, style = MaterialTheme.typography.labelSmall)
+                Text(text = route.name, style = MaterialTheme.typography.titleMedium)
+                Text(text = "Distance: ${route.distance}", style = MaterialTheme.typography.labelSmall)
+                Text(text = "Duration: ${route.duration}", style = MaterialTheme.typography.labelSmall)
             }
 
             Column(
@@ -75,7 +70,7 @@ fun RouteCard(
             ) {
                 if (isActive) {
                     Button(
-                        onClick = {},
+                        onClick = onChangeState,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Green,
                             contentColor = Color.White
@@ -87,7 +82,7 @@ fun RouteCard(
                     }
                 } else {
                     Button(
-                        onClick = {},
+                        onClick = onChangeState,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Gray,
                             contentColor = Color.White
@@ -100,13 +95,5 @@ fun RouteCard(
                 }
             }
         }
-    }
-}
-
-@Composable
-@Preview
-fun RouteCardPreview() {
-    AppTheme(dynamicColor = false) {
-        RouteCard()
     }
 }
