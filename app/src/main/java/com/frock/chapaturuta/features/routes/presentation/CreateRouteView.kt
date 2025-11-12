@@ -91,12 +91,12 @@ fun CreateRouteView(profileId:Int,
         stopViewModel.getAllStops(profileId)
     }
 
-    // 🧭 Decodificar la ruta (fuera del GoogleMap)
+    // Decodificar la ruta (fuera del GoogleMap)
     val path = remember(directionsResult) {
         directionsResult?.polylinePoints?.let { PolyUtil.decode(it) } ?: emptyList()
     }
 
-// 📸 Centrar la cámara cuando haya una ruta
+// Centrar la cámara cuando haya una ruta
     LaunchedEffect(path) {
         if (path.isNotEmpty()) {
             val bounds = LatLngBounds.builder().apply {
@@ -268,9 +268,9 @@ fun CreateRouteView(profileId:Int,
                             Button(
                                 onClick = {
                                     coroutineScope.launch {
-                                        // 1️⃣ Llamar a getDirections y esperar que termine
+                                        // Llamar a getDirections y esperar que termine
                                         routeViewModel.getDirections(selectedStops)// Espera hasta que termine
-                                        // 2️⃣ Esperar hasta que directionsResult tenga datos
+                                        // Esperar hasta que directionsResult tenga datos
                                         var attempts = 0
                                         while (routeViewModel.directionsResult.value == null && attempts < 20) {
                                             delay(250) // espera 0.25s por intento
@@ -279,11 +279,11 @@ fun CreateRouteView(profileId:Int,
 
                                         val result = routeViewModel.directionsResult.value
                                         if (result == null) {
-                                            Log.e("CreateRoute", "❌ No se pudo obtener directionsResult a tiempo")
+                                            Log.e("CreateRoute", "No se pudo obtener directionsResult a tiempo")
                                             return@launch
                                         }
 
-                                        // 2️⃣ Crear la ruta usando los datos obtenidos
+                                        // Crear la ruta usando los datos obtenidos
                                         routeViewModel.createRoute(
                                             routeName,
                                             price.toDouble(),
@@ -294,10 +294,24 @@ fun CreateRouteView(profileId:Int,
                                             profileId
                                         )
 
-                                        // 3️⃣ Esperar un poco a que el _route se actualice
-                                        delay(500) // breve espera para asegurar que route.value esté listo
+                                        var attempts2 = 0
+                                        while ((routeViewModel.route.value?.id ?: 0) == 0 && attempts2 < 20) {
+                                            delay(250)
+                                            attempts2++
+                                        }
 
-                                        // 4️⃣ Crear las relaciones Stop-Route
+                                        val createdRouteId = routeViewModel.route.value?.id
+                                        if (createdRouteId != null && createdRouteId != 0) {
+                                            selectedStops.forEach { stop ->
+                                                routeViewModel.createStopRoute(createdRouteId, stop.id)
+                                            }
+                                        } else {
+                                            Log.e("CreateRoute", "No se obtuvo un routeId válido después de crear la ruta")
+                                        }
+                                        // Esperar un poco a que el _route se actualice
+                                        //delay(500) // breve espera para asegurar que route.value esté listo
+
+                                        // Crear las relaciones Stop-Route
                                         selectedStops.forEach { stop ->
                                             routeViewModel.createStopRoute(route?.id ?: 0, stop.id)
                                         }

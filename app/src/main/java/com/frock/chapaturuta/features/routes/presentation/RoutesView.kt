@@ -46,9 +46,10 @@ fun RoutesView(profileId:Int,
 ) {
 
     val routes by routeViewModel.routes.collectAsState()
+    val stopRoutes by routeViewModel.stopRoutes.collectAsState()
 
     var selectedRoute by remember { mutableStateOf<Route?>(null) }
-    var stops by remember { mutableStateOf<List<Stop>>(emptyList()) }
+    //var stops by remember { mutableStateOf<List<Stop>>(emptyList()) }
 
     // Estado de cámara del mapa
     val cameraPositionState = rememberCameraPositionState{
@@ -63,10 +64,13 @@ fun RoutesView(profileId:Int,
     LaunchedEffect(selectedRoute) {
         selectedRoute?.let { route ->
             routeViewModel.getStopRoutesByRouteId(route.id)
-            delay(500) // breve espera para cargar
-            stops = routeViewModel.stopRoutes.value.map { it.stop } // asumiendo que `StopRoute` contiene un campo `stop`
+            //delay(2000) // breve espera para cargar
+
+            //stops = routeViewModel.stopRoutes.value.map { it.stop } // asumiendo que `StopRoute` contiene un campo `stop`
         }
     }
+
+    val stops = stopRoutes.map { it.stop }
 
 
     Column(

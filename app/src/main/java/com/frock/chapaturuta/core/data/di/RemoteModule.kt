@@ -28,7 +28,7 @@ object RemoteModule {
     @Singleton
     @Named("backend_url")
     fun provideApiBaseUrl():String{
-        return "http://10.0.2.2:5042/api/v1/"
+        return "https://chapaturutabackend.onrender.com/api/v1/"
     }
 
     @Provides

@@ -52,7 +52,14 @@ class RouteViewModel @Inject constructor(
 
     fun getStopRoutesByRouteId(routeId:Int){
         viewModelScope.launch {
-            _stopRoutes.value = routeRepository.getStopRoutesByRouteId(routeId)
+            try {
+                val result = routeRepository.getStopRoutesByRouteId(routeId)
+                Log.d("RouteViewModel", "✅ Stops received: ${result.size}")
+                _stopRoutes.value = result
+            } catch (e: Exception) {
+                Log.e("RouteViewModel", "❌ Error getting stops", e)
+            }
+            //_stopRoutes.value = routeRepository.getStopRoutesByRouteId(routeId)
         }
     }
 

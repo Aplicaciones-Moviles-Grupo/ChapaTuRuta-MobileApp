@@ -63,7 +63,10 @@ fun ProfileView(
 
             val profile = (profileUiState as ProfileUiState.Success).profile
 
-            viewModel.getVehicleByProfileId(profile.id)
+            LaunchedEffect(profile.id) {
+                viewModel.getVehicleByProfileId(profile.id)
+            }
+
 
             val vehicle = when(vehicleUiState){
                 is VehicleUiState.Success -> (vehicleUiState as VehicleUiState.Success).vehicle
