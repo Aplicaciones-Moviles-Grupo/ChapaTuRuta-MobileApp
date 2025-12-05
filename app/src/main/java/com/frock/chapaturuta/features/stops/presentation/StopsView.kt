@@ -86,7 +86,7 @@ fun StopsView(
 
         // Mapa
         GoogleMap(
-            modifier = Modifier.fillMaxWidth().weight(1f),
+            modifier = Modifier.fillMaxWidth().weight(if(stops.isEmpty())1f else 0.65f),
             cameraPositionState = cameraPositionState
         ) {
             // Dibujamos todos los paraderos
@@ -100,28 +100,31 @@ fun StopsView(
         }
 
         // Stops list
-        LazyColumn(
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            modifier= Modifier.height(180.dp)
-        ) {
-            items(stops) { stop ->
-                StopCard(
-                    stop = stop,
-                    onDelete = { viewModel.deleteStop(stop.id) },
-                    onEdit = { onNavigateToEditStop(stop.name) },
-                    onSelect = {
-                        coroutineScope.launch {
-                            cameraPositionState.animate(
-                                update = CameraUpdateFactory.newLatLngZoom(
-                                    LatLng(stop.latitude, stop.longitude),
-                                    16f // nivel de zoom deseado
-                                ),
-                                durationMs = 1000
-                            )
+        if(stops.isNotEmpty()){
+            LazyColumn(
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                modifier= Modifier.weight(0.35f)
+            ) {
+                items(stops) { stop ->
+                    StopCard(
+                        stop = stop,
+                        onDelete = { viewModel.deleteStop(stop.id) },
+                        onEdit = { onNavigateToEditStop(stop.name) },
+                        onSelect = {
+                            coroutineScope.launch {
+                                cameraPositionState.animate(
+                                    update = CameraUpdateFactory.newLatLngZoom(
+                                        LatLng(stop.latitude, stop.longitude),
+                                        16f // nivel de zoom deseado
+                                    ),
+                                    durationMs = 1000
+                                )
+                            }
                         }
-                    }
-                )
+                    )
+                }
             }
         }
+
     }
 }
