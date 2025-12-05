@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -72,7 +73,13 @@ fun Home(userId:Int,
 
     when(profileUiState){
         is ProfileUiState.Loading ->{
-            CircularProgressIndicator()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                CircularProgressIndicator()
+            }
         }
         is ProfileUiState.Error -> {
             Text("Error: ${(profileUiState as ProfileUiState.Error).message}")
@@ -106,13 +113,13 @@ fun Home(userId:Int,
                         Text(
                             text = "Hello, ${profile.firstName} ${profile.lastName}",
                             style = MaterialTheme.typography.titleMedium,
-                            fontSize = 24.sp
+                            fontSize = 20.sp
                         )
                         Text(
                             text = "Good Morning!",
                             style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.SemiBold,
-                            fontSize = 16.sp
+                            fontSize = 14.sp
                         )
                     }
 
