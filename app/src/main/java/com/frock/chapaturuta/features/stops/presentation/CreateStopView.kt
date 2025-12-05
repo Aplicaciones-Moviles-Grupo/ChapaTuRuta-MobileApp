@@ -19,6 +19,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -129,8 +130,9 @@ fun CreateStopView(
                             address = ""
                             tempLatLng = null
                             showDialog = false
+                            newImageUri= null
                         }) {
-                            Text("Crear Paradero")
+                            Text("Crear Paradero", textAlign = TextAlign.Center)
                         }
                     },
                     dismissButton = {
@@ -143,9 +145,12 @@ fun CreateStopView(
                             Text("Cancelar")
                         }
                     },
-                    title = { Text("Nuevo Paradero") },
+                    title = { Text("Nuevo Paradero", textAlign = TextAlign.Center) },
                     text = {
-                        Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                        Column(
+                            verticalArrangement = Arrangement.spacedBy(8.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
 
                             Box(
                                 modifier = Modifier
@@ -163,7 +168,7 @@ fun CreateStopView(
                                     Image(
                                         painterResource(R.drawable.imagetemplate),
                                         contentDescription = null,
-                                        Modifier.size(140.dp)
+                                        modifier = Modifier.fillMaxSize()
                                     )
                                 }
                             }
@@ -173,7 +178,8 @@ fun CreateStopView(
                             // Botón para abrir la galería
                             Button(
                                 onClick = { launcher.launch("image/*") },
-                                modifier = Modifier.fillMaxWidth(0.6f)
+                                modifier = Modifier.fillMaxWidth(),
+                                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6366F1))
                             ) {
                                 Icon(Icons.Default.Upload, contentDescription = null)
                                 Spacer(modifier = Modifier.width(8.dp))
