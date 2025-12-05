@@ -49,7 +49,13 @@ fun RegisterProfileView(
 
     when(uiState){
         is ProfileUiState.Loading->{
-            CircularProgressIndicator()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                CircularProgressIndicator()
+            }
         }
 
         is ProfileUiState.Error -> {
@@ -125,7 +131,8 @@ fun RegisterProfileView(
                     // Botón para abrir la galería
                     Button(
                         onClick = { launcher.launch("image/*") },
-                        modifier = Modifier.fillMaxWidth(0.6f)
+                        modifier = Modifier.fillMaxWidth(0.6f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6366F1))
                     ) {
                         Icon(Icons.Default.Upload, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
@@ -146,7 +153,7 @@ fun RegisterProfileView(
                         value = firstName,
                         onValueChange = { firstName = it },
                         label = { Text("First Name") },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = Color.White,
                             focusedContainerColor = Color.White
@@ -158,7 +165,7 @@ fun RegisterProfileView(
                         value = lastName,
                         onValueChange = { lastName = it },
                         label = { Text("Last Name") },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = Color.White,
                             focusedContainerColor = Color.White

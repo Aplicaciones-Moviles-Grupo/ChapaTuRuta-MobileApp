@@ -145,7 +145,13 @@ fun RegisterUserView(
 
             when(uiState){
                 is LoginUiState.Loading ->{
-                    CircularProgressIndicator(color = PrimaryColor)
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .wrapContentSize(Alignment.Center)
+                    ) {
+                        CircularProgressIndicator()
+                    }
                 }
                 is LoginUiState.Error ->{
                     val message = (uiState as LoginUiState.Error).message
