@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Upload
@@ -94,7 +95,7 @@ fun RegisterVehicleView(
             )*/
 
             Text(
-                text = "Create Vehicle - ProfileId: ${profileId}",
+                text = "Create Vehicle",
                 fontSize = 24.sp,
                 fontWeight = FontWeight.Bold
             )
@@ -117,6 +118,7 @@ fun RegisterVehicleView(
                     Image(
                         painterResource(R.drawable.imagetemplate),
                         contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.FillHeight
                     )
                 }
@@ -127,7 +129,8 @@ fun RegisterVehicleView(
             // Botón para abrir la galería
             Button(
                 onClick = { launcher.launch("image/*") },
-                modifier = Modifier.fillMaxWidth(0.6f)
+                modifier = Modifier.fillMaxWidth(0.6f),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6366F1))
             ) {
                 Icon(Icons.Default.Upload, contentDescription = null)
                 Spacer(modifier = Modifier.width(8.dp))
@@ -238,7 +241,13 @@ fun RegisterVehicleView(
 
     when(vehicleUiState){
         is VehicleUiState.Loading->{
-            CircularProgressIndicator()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .wrapContentSize(Alignment.Center)
+            ) {
+                CircularProgressIndicator()
+            }
         }
 
         is VehicleUiState.Error -> {
