@@ -127,7 +127,7 @@ fun EditVehicleView(
                             AsyncImage(
                                 model = vehicle.vehicleImageUrl,
                                 contentDescription = "",
-                                modifier = Modifier.height(96.dp)
+                                modifier = Modifier.fillMaxSize()
                             )
                         }
                     }
@@ -137,7 +137,8 @@ fun EditVehicleView(
                     // Botón para abrir la galería
                     Button(
                         onClick = { launcher.launch("image/*") },
-                        modifier = Modifier.fillMaxWidth(0.6f)
+                        modifier = Modifier.fillMaxWidth(0.6f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6366F1))
                     ) {
                         Icon(Icons.Default.Upload, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
@@ -202,7 +203,7 @@ fun EditVehicleView(
                     // Botón Register
                     Button(
                         onClick = {
-                            viewModel.updateVehicle(profileId,vehicle.id, newImageUri,plate,model,color)
+                            viewModel.updateVehicle(profileId,vehicle.id, newImageUri,color,model,plate)
                             onEditClick()
                         },
                         modifier = Modifier
