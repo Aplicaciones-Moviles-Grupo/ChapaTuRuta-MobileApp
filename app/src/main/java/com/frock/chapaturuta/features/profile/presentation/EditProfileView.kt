@@ -140,7 +140,8 @@ fun EditProfileView(
                     // Botón para abrir la galería
                     Button(
                         onClick = { launcher.launch("image/*") },
-                        modifier = Modifier.fillMaxWidth(0.6f)
+                        modifier = Modifier.fillMaxWidth(0.6f),
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF6366F1))
                     ) {
                         Icon(Icons.Default.Upload, contentDescription = null)
                         Spacer(modifier = Modifier.width(8.dp))
@@ -161,7 +162,7 @@ fun EditProfileView(
                         value = firstName,
                         onValueChange = { firstName = it },
                         label = { Text("First Name") },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = Color.White,
                             focusedContainerColor = Color.White
@@ -173,7 +174,7 @@ fun EditProfileView(
                         value = lastName,
                         onValueChange = { lastName = it },
                         label = { Text("Last Name") },
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.fillMaxWidth(),
                         colors = OutlinedTextFieldDefaults.colors(
                             unfocusedContainerColor = Color.White,
                             focusedContainerColor = Color.White
@@ -220,7 +221,7 @@ fun EditProfileView(
                         },
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
+                            .height(48.dp),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = PrimaryColor
                         ),
@@ -236,7 +237,7 @@ fun EditProfileView(
                         onClick = onCancelClick,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(56.dp),
+                            .height(48.dp),
                         shape = RoundedCornerShape(28.dp),
                         colors = ButtonDefaults.outlinedButtonColors(
                             contentColor = Color.Gray
