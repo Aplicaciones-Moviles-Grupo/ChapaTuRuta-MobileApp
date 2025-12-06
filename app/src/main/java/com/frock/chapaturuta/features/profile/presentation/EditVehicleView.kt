@@ -14,7 +14,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Upload
 import androidx.compose.material3.Button
@@ -71,6 +73,8 @@ fun EditVehicleView(
             Text("Error: ${(vehicleUiState as VehicleUiState.Error).message}")
         }
         is VehicleUiState.Success->{
+
+            val scrollState = rememberScrollState()
             val vehicle = (vehicleUiState as VehicleUiState.Success).vehicle
 
             var model by remember { mutableStateOf(vehicle.model) }
@@ -94,6 +98,7 @@ fun EditVehicleView(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
+                        .verticalScroll(scrollState)
                         .padding(32.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
