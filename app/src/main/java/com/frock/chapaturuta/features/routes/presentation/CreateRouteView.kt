@@ -306,15 +306,16 @@ fun CreateRouteView(profileId:Int,
                                                 routeViewModel.createStopRoute(createdRouteId, stop.id)
                                             }
                                         } else {
+                                            selectedStops.forEach { stop ->
+                                                routeViewModel.createStopRoute(route?.id ?: 0, stop.id)
+                                            }
                                             Log.e("CreateRoute", "No se obtuvo un routeId válido después de crear la ruta")
                                         }
                                         // Esperar un poco a que el _route se actualice
-                                        //delay(500) // breve espera para asegurar que route.value esté listo
+                                        delay(500) // breve espera para asegurar que route.value esté listo
 
                                         // Crear las relaciones Stop-Route
-                                        selectedStops.forEach { stop ->
-                                            routeViewModel.createStopRoute(route?.id ?: 0, stop.id)
-                                        }
+
                                         showDialog = false
                                     }
                                 },
